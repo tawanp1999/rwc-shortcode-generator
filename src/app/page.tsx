@@ -317,22 +317,19 @@ export default function Home() {
             )}
 
             {/* User Guide Section */}
-            <section className="glass-card animate-fade-in">
+            <section className="glass-card animate-fade-in bg-yellow-500/10 border-yellow-500/30">
               <button
                 className="accordion-header w-full p-4 flex items-center justify-between rounded-2xl"
                 onClick={() => setIsGuideOpen(!isGuideOpen)}
               >
                 <div className="flex items-center gap-3">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">คู่มือการใช้งาน</span>
-                    <span className="px-2 py-0.5 text-xs font-semibold bg-yellow-500/20 text-yellow-400 rounded-full border border-yellow-500/30">คู่มือ</span>
-                  </div>
+                  <BookOpen className="w-6 h-6 text-yellow-500" />
+                  <span className="font-semibold text-yellow-500">คู่มือการใช้งาน</span>
                 </div>
                 {isGuideOpen ? (
-                  <ChevronUp className="w-5 h-5 text-muted" />
+                  <ChevronUp className="w-5 h-5 text-yellow-500" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-muted" />
+                  <ChevronDown className="w-5 h-5 text-yellow-500" />
                 )}
               </button>
 
@@ -370,11 +367,11 @@ export default function Home() {
                       วาง shortcode ที่คัดลอกไว้ลงในกล่อง code (เลข 1) แล้วคลิก &quot;Edit with UX Builder&quot; (เลข 2) เพื่อดูและแก้ไขแบบ visual
                     </p>
                     {/* Image */}
-                    <div className="ml-8 p-6 rounded-xl overflow-hidden border border-border/50 shadow-lg bg-white/5">
+                    <div className="ml-8 flex justify-center">
                       <img
                         src="/guide/ux-builder-example.png"
                         alt="ตัวอย่างการวาง Shortcode ใน WordPress"
-                        className="w-full h-auto"
+                        className="w-full max-w-2xl rounded-xl shadow-lg border border-border/30"
                       />
                     </div>
                     <p className="text-xs text-muted ml-8 mt-2">
