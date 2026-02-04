@@ -322,9 +322,12 @@ export default function Home() {
                 className="accordion-header w-full p-4 flex items-center justify-between rounded-2xl"
                 onClick={() => setIsGuideOpen(!isGuideOpen)}
               >
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-primary" />
-                  <span className="font-semibold">คู่มือการใช้งาน</span>
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">คู่มือการใช้งาน</span>
+                    <span className="px-2 py-0.5 text-xs font-semibold bg-yellow-500/20 text-yellow-400 rounded-full border border-yellow-500/30">คู่มือ</span>
+                  </div>
                 </div>
                 {isGuideOpen ? (
                   <ChevronUp className="w-5 h-5 text-muted" />
@@ -367,7 +370,7 @@ export default function Home() {
                       วาง shortcode ที่คัดลอกไว้ลงในกล่อง code (เลข 1) แล้วคลิก &quot;Edit with UX Builder&quot; (เลข 2) เพื่อดูและแก้ไขแบบ visual
                     </p>
                     {/* Image */}
-                    <div className="ml-8 rounded-lg overflow-hidden border border-border/50">
+                    <div className="ml-8 p-6 rounded-xl overflow-hidden border border-border/50 shadow-lg bg-white/5">
                       <img
                         src="/guide/ux-builder-example.png"
                         alt="ตัวอย่างการวาง Shortcode ใน WordPress"
