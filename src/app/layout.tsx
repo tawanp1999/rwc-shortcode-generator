@@ -9,7 +9,7 @@ const notoSansThai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "RWC Shortcode Generator",
+  title: "Shortcode Generator",
   description: "เครื่องมือแปลงเนื้อหาบทความเป็น WordPress Flatsome Shortcode",
 };
 

@@ -10,7 +10,8 @@ import {
   ChevronUp,
   FileText,
   Zap,
-  Upload
+  Upload,
+  BookOpen
 } from "lucide-react";
 import { convertToShortcode, type ConversionSettings } from "@/lib/converter";
 
@@ -20,6 +21,7 @@ export default function Home() {
 
   // State สำหรับ Settings
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [contactBlockId, setContactBlockId] = useState("12669");
   const [doctorBlockId, setDoctorBlockId] = useState("12482");
 
@@ -110,11 +112,11 @@ export default function Home() {
               <Zap className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold gradient-text">
-              RWC Shortcode Generator
+              Shortcode Generator
             </h1>
           </div>
           <p className="text-muted text-lg">
-            แปลงเนื้อหาบทความเป็น WordPress Flatsome Shortcode อย่างรวดเร็ว
+            แปลงเนื้อหาบทความเป็น WordPress Flatsome Shortcode
           </p>
         </header>
 
@@ -313,12 +315,78 @@ export default function Home() {
                 </div>
               </section>
             )}
+
+            {/* User Guide Section */}
+            <section className="glass-card animate-fade-in">
+              <button
+                className="accordion-header w-full p-4 flex items-center justify-between rounded-2xl"
+                onClick={() => setIsGuideOpen(!isGuideOpen)}
+              >
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                  <span className="font-semibold">คู่มือการใช้งาน</span>
+                </div>
+                {isGuideOpen ? (
+                  <ChevronUp className="w-5 h-5 text-muted" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-muted" />
+                )}
+              </button>
+
+              <div className={`accordion-content ${isGuideOpen ? "open" : ""}`}>
+                <div className="p-4 pt-0 space-y-6">
+                  {/* Step 1 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary flex items-center gap-2">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm">1</span>
+                      วางเนื้อหา Markdown
+                    </h4>
+                    <p className="text-sm text-muted ml-8">
+                      วางเนื้อหาบทความในช่องฝั่งซ้าย หรืออัปโหลดไฟล์ .md/.txt ได้เลย
+                    </p>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary flex items-center gap-2">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm">2</span>
+                      Generate และคัดลอก
+                    </h4>
+                    <p className="text-sm text-muted ml-8">
+                      คลิก &quot;Generate Shortcode&quot; แล้วคัดลอกผลลัพธ์ด้วยปุ่ม &quot;Copy to Clipboard&quot;
+                    </p>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary flex items-center gap-2">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm">3</span>
+                      วางใน UX Builder
+                    </h4>
+                    <p className="text-sm text-muted ml-8 mb-3">
+                      ไปที่ WordPress UX Builder คลิก &quot;Edit with UX Builder&quot; แล้ววาง shortcode ที่คัดลอกไว้
+                    </p>
+                    {/* Image */}
+                    <div className="ml-8 rounded-lg overflow-hidden border border-border/50">
+                      <img
+                        src="/guide/ux-builder-example.png"
+                        alt="ตัวอย่างการวาง Shortcode ใน UX Builder"
+                        className="w-full h-auto"
+                      />
+                    </div>
+                    <p className="text-xs text-muted ml-8 mt-2">
+                      💡 <strong>คำแนะนำ:</strong> วาง shortcode ลงในพื้นที่ว่าง กล่องสีชมพูจะเป็น link anchor ให้กับสารบัญ
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
 
         {/* Footer */}
         <footer className="text-center mt-12 py-6 text-muted text-sm">
-          <p>RWC Shortcode Generator • สำหรับทีม Content</p>
+          <p>Shortcode Generator • สำหรับทีม Content</p>
         </footer>
       </div>
     </main>
