@@ -291,31 +291,6 @@ export default function Home() {
               )}
             </section>
 
-            {/* Headings Summary */}
-            {headings.length > 0 && (
-              <section className="glass-card p-6 animate-fade-in">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-primary" />
-                  Anchor Links ({headings.length} หัวข้อ)
-                </h3>
-                <div className="space-y-2">
-                  {headings.map((heading, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
-                    >
-                      <span className="text-sm truncate flex-1 mr-4">
-                        {heading.text}
-                      </span>
-                      <code className="text-xs text-accent bg-secondary px-2 py-1 rounded">
-                        #{heading.anchor}
-                      </code>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
             {/* User Guide Section */}
             <section className="glass-card animate-fade-in bg-yellow-500/10 border-yellow-500/30">
               <button
