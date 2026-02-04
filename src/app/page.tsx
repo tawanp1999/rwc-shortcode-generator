@@ -1,65 +1,326 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useCallback } from "react";
+import {
+  Settings,
+  Copy,
+  Check,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Zap,
+  Upload
+} from "lucide-react";
+import { convertToShortcode, type ConversionSettings } from "@/lib/converter";
 
 export default function Home() {
+  // State สำหรับ Input
+  const [inputContent, setInputContent] = useState("");
+
+  // State สำหรับ Settings
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [contactBlockId, setContactBlockId] = useState("12669");
+  const [doctorBlockId, setDoctorBlockId] = useState("12482");
+
+  // State สำหรับ Output
+  const [outputContent, setOutputContent] = useState("");
+  const [headings, setHeadings] = useState<{ text: string; anchor: string }[]>([]);
+  const [isCopied, setIsCopied] = useState(false);
+
+  // State สำหรับ Loading
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Handle Generate
+  const handleGenerate = useCallback(() => {
+    if (!inputContent.trim()) return;
+
+    setIsGenerating(true);
+
+    // Simulate processing delay for UX
+    setTimeout(() => {
+      const settings: ConversionSettings = {
+        contactBlockId,
+        doctorBlockId,
+      };
+
+      const result = convertToShortcode(inputContent, settings);
+      setOutputContent(result.output);
+      setHeadings(result.headings);
+      setIsGenerating(false);
+    }, 500);
+  }, [inputContent, contactBlockId, doctorBlockId]);
+
+  // Handle Copy
+  const handleCopy = useCallback(async () => {
+    if (!outputContent) return;
+
+    try {
+      await navigator.clipboard.writeText(outputContent);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  }, [outputContent]);
+
+  // Toggle Settings
+  const toggleSettings = useCallback(() => {
+    setIsSettingsOpen((prev) => !prev);
+  }, []);
+
+  // Handle File Upload
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // ตรวจสอบประเภทไฟล์
+    const validExtensions = ['.md', '.txt'];
+    const fileName = file.name.toLowerCase();
+    const isValidFile = validExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!isValidFile) {
+      alert('กรุณาเลือกไฟล์ .md หรือ .txt เท่านั้น');
+      event.target.value = ''; // Reset input
+      return;
+    }
+
+    // อ่านไฟล์
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      setInputContent(content);
+    };
+    reader.onerror = () => {
+      alert('เกิดข้อผิดพลาดในการอ่านไฟล์');
+    };
+    reader.readAsText(file, 'UTF-8');
+
+    // Reset input เพื่อให้สามารถอัปโหลดไฟล์เดิมซ้ำได้
+    event.target.value = '';
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <header className="text-center mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-3 mb-4">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-primary to-accent glow-primary">
+              <Zap className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold gradient-text">
+              RWC Shortcode Generator
+            </h1>
+          </div>
+          <p className="text-muted text-lg">
+            แปลงเนื้อหาบทความเป็น WordPress Flatsome Shortcode อย่างรวดเร็ว
           </p>
+        </header>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Input & Settings */}
+          <div className="space-y-6">
+            {/* Input Area */}
+            <section className="glass-card p-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold">เนื้อหาบทความ</h2>
+              </div>
+
+              <textarea
+                className="textarea-field min-h-[300px] md:min-h-[400px]"
+                placeholder={`วางเนื้อหาบทความที่นี่...
+
+ตัวอย่าง:
+## หัวข้อแรก
+เนื้อหาของหัวข้อแรก อธิบายรายละเอียดต่างๆ
+
+## หัวข้อที่สอง
+เนื้อหาของหัวข้อที่สอง
+- รายการย่อย 1
+- รายการย่อย 2
+
+## หัวข้อที่สาม
+เนื้อหาส่วนสุดท้าย`}
+                value={inputContent}
+                onChange={(e) => setInputContent(e.target.value)}
+              />
+
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted">
+                    {inputContent.length > 0 && `${inputContent.length.toLocaleString()} ตัวอักษร`}
+                  </span>
+
+                  {/* Upload File Button */}
+                  <label className="btn-secondary flex items-center gap-2 cursor-pointer">
+                    <Upload className="w-4 h-4" />
+                    <span className="text-sm">อัปโหลดไฟล์</span>
+                    <input
+                      type="file"
+                      accept=".md,.txt"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                <button
+                  className="btn-primary flex items-center gap-2"
+                  onClick={handleGenerate}
+                  disabled={!inputContent.trim() || isGenerating}
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      กำลังสร้าง...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      Generate Shortcode
+                    </>
+                  )}
+                </button>
+              </div>
+            </section>
+
+            {/* Settings Panel (Accordion) */}
+            <section className="glass-card animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <button
+                className="accordion-header w-full p-4 flex items-center justify-between rounded-2xl"
+                onClick={toggleSettings}
+              >
+                <div className="flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-accent" />
+                  <span className="font-semibold">ตั้งค่า Default Footer Blocks</span>
+                </div>
+                {isSettingsOpen ? (
+                  <ChevronUp className="w-5 h-5 text-muted" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-muted" />
+                )}
+              </button>
+
+              <div className={`accordion-content ${isSettingsOpen ? "open" : ""}`}>
+                <div className="p-4 pt-0 space-y-4">
+                  <div>
+                    <label className="label" htmlFor="contactBlockId">
+                      Contact Block ID
+                    </label>
+                    <input
+                      id="contactBlockId"
+                      type="text"
+                      className="input-field"
+                      value={contactBlockId}
+                      onChange={(e) => setContactBlockId(e.target.value)}
+                      placeholder="เช่น 12669"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="label" htmlFor="doctorBlockId">
+                      Doctor Block ID
+                    </label>
+                    <input
+                      id="doctorBlockId"
+                      type="text"
+                      className="input-field"
+                      value={doctorBlockId}
+                      onChange={(e) => setDoctorBlockId(e.target.value)}
+                      placeholder="เช่น 12482"
+                    />
+                  </div>
+
+                  <p className="text-sm text-muted">
+                    Block IDs เหล่านี้จะถูกเพิ่มท้ายบทความโดยอัตโนมัติ
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Right Column - Output */}
+          <div className="space-y-6">
+            {/* Output Area */}
+            <section className="glass-card p-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-accent" />
+                  <h2 className="text-lg font-semibold">Shortcode Output</h2>
+                </div>
+
+                {outputContent && (
+                  <button
+                    className={`btn-secondary flex items-center gap-2 ${isCopied ? "border-success text-success" : ""
+                      }`}
+                    onClick={handleCopy}
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-5 h-5" />
+                        Copy to Clipboard
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              {outputContent ? (
+                <div className="code-block min-h-[300px] md:min-h-[400px] max-h-[600px] overflow-y-auto">
+                  {outputContent}
+                </div>
+              ) : (
+                <div className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center text-muted">
+                  <Sparkles className="w-16 h-16 mb-4 opacity-30" />
+                  <p className="text-center">
+                    ผลลัพธ์ Shortcode จะแสดงที่นี่
+                    <br />
+                    <span className="text-sm">วางเนื้อหาและกด Generate เพื่อเริ่มต้น</span>
+                  </p>
+                </div>
+              )}
+            </section>
+
+            {/* Headings Summary */}
+            {headings.length > 0 && (
+              <section className="glass-card p-6 animate-fade-in">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary" />
+                  Anchor Links ({headings.length} หัวข้อ)
+                </h3>
+                <div className="space-y-2">
+                  {headings.map((heading, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
+                    >
+                      <span className="text-sm truncate flex-1 mr-4">
+                        {heading.text}
+                      </span>
+                      <code className="text-xs text-accent bg-secondary px-2 py-1 rounded">
+                        #{heading.anchor}
+                      </code>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        {/* Footer */}
+        <footer className="text-center mt-12 py-6 text-muted text-sm">
+          <p>RWC Shortcode Generator • สำหรับทีม Content</p>
+        </footer>
+      </div>
+    </main>
   );
 }
