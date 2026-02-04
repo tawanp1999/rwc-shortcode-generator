@@ -361,21 +361,21 @@ export default function Home() {
                   <div className="space-y-3">
                     <h4 className="font-semibold text-primary flex items-center gap-2">
                       <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm">3</span>
-                      วางใน UX Builder
+                      วางใน WordPress
                     </h4>
                     <p className="text-sm text-muted ml-8 mb-3">
-                      ไปที่ WordPress UX Builder คลิก &quot;Edit with UX Builder&quot; แล้ววาง shortcode ที่คัดลอกไว้
+                      วาง shortcode ที่คัดลอกไว้ลงในกล่อง code (เลข 1) แล้วคลิก &quot;Edit with UX Builder&quot; (เลข 2) เพื่อดูและแก้ไขแบบ visual
                     </p>
                     {/* Image */}
                     <div className="ml-8 rounded-lg overflow-hidden border border-border/50">
                       <img
                         src="/guide/ux-builder-example.png"
-                        alt="ตัวอย่างการวาง Shortcode ใน UX Builder"
+                        alt="ตัวอย่างการวาง Shortcode ใน WordPress"
                         className="w-full h-auto"
                       />
                     </div>
                     <p className="text-xs text-muted ml-8 mt-2">
-                      💡 <strong>คำแนะนำ:</strong> วาง shortcode ลงในพื้นที่ว่าง กล่องสีชมพูจะเป็น link anchor ให้กับสารบัญ
+                      💡 <strong>คำแนะนำ:</strong> วาง shortcode ในกล่องที่มีเลข 1 (กล่องสีชมพู) แล้วคลิกปุ่ม Edit with UX Builder (เลข 2) เพื่อเข้าสู่โหมดแก้ไขแบบ visual
                     </p>
                   </div>
                 </div>
