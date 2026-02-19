@@ -4,9 +4,15 @@
 
 import { marked } from 'marked';
 
+export type TemplateType = 'rwc' | 'standard' | 'universal';
+
 export interface ConversionSettings {
+    templateType: TemplateType;
+    // RWC
     contactBlockId: string;
     doctorBlockId: string;
+    // Standard
+    standardBlockId: string;
 }
 
 export interface ConversionResult {
@@ -225,8 +231,9 @@ function generateShortcode(
         }
     });
 
-    // เพิ่ม Table of Contents ถ้ามี headings (แบบ Accordion)
-    if (tocHeadings.length > 0) {
+    // เพิ่ม TOC ตาม template
+    if (settings.templateType === 'rwc' && tocHeadings.length > 0) {
+        // RWC: Flatsome Accordion TOC
         outputParts.push(`[row]`);
         outputParts.push(`[col span__sm="12"]`);
         outputParts.push(`[accordion]`);
@@ -241,7 +248,13 @@ function generateShortcode(
         outputParts.push(`[/col]`);
         outputParts.push(`[/row]`);
         outputParts.push('');
+    } else if (settings.templateType === 'standard') {
+        // Standard: LuckyWP TOC shortcode วางแบบ standalone
+        // ไม่ใช้ [row][col] wrapper เพื่อป้องกัน WordPress wpautop เพิ่ม <p> รอบมัน
+        outputParts.push(`[lwptoc]`);
+        outputParts.push('');
     }
+    // Universal: ไม่มี TOC
 
     // Reset heading index for actual content
     headingIndex = 0;
@@ -303,13 +316,22 @@ function generateShortcode(
         outputParts.push('');
     });
 
-    // เพิ่ม Footer Blocks ในโครงสร้าง [row]/[col]
-    outputParts.push(`[row]`);
-    outputParts.push(`[col span__sm="12"]`);
-    outputParts.push(`[block id="${settings.contactBlockId}"]`);
-    outputParts.push(`[block id="${settings.doctorBlockId}"]`);
-    outputParts.push(`[/col]`);
-    outputParts.push(`[/row]`);
+    // เพิ่ม Footer Blocks ตาม template
+    if (settings.templateType === 'rwc') {
+        outputParts.push(`[row]`);
+        outputParts.push(`[col span__sm="12"]`);
+        outputParts.push(`[block id="${settings.contactBlockId}"]`);
+        outputParts.push(`[block id="${settings.doctorBlockId}"]`);
+        outputParts.push(`[/col]`);
+        outputParts.push(`[/row]`);
+    } else if (settings.templateType === 'standard') {
+        outputParts.push(`[row]`);
+        outputParts.push(`[col span__sm="12"]`);
+        outputParts.push(`[block id="${settings.standardBlockId}"]`);
+        outputParts.push(`[/col]`);
+        outputParts.push(`[/row]`);
+    }
+    // Universal: ไม่มี footer
 
     return {
         output: outputParts.join('\n'),

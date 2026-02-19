@@ -13,7 +13,7 @@ import {
   Upload,
   BookOpen
 } from "lucide-react";
-import { convertToShortcode, type ConversionSettings } from "@/lib/converter";
+import { convertToShortcode, type ConversionSettings, type TemplateType } from "@/lib/converter";
 
 export default function Home() {
   // State สำหรับ Input
@@ -22,8 +22,10 @@ export default function Home() {
   // State สำหรับ Settings
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [templateType, setTemplateType] = useState<TemplateType>("rwc");
   const [contactBlockId, setContactBlockId] = useState("12669");
   const [doctorBlockId, setDoctorBlockId] = useState("12482");
+  const [standardBlockId, setStandardBlockId] = useState("8549");
 
   // State สำหรับ Output
   const [outputContent, setOutputContent] = useState("");
@@ -42,8 +44,10 @@ export default function Home() {
     // Simulate processing delay for UX
     setTimeout(() => {
       const settings: ConversionSettings = {
+        templateType,
         contactBlockId,
         doctorBlockId,
+        standardBlockId,
       };
 
       const result = convertToShortcode(inputContent, settings);
@@ -189,58 +193,104 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Settings Panel (Accordion) */}
+            {/* Template Selector + Settings Panel */}
             <section className="glass-card animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              <button
-                className="accordion-header w-full p-4 flex items-center justify-between rounded-2xl"
-                onClick={toggleSettings}
-              >
-                <div className="flex items-center gap-2">
+              {/* Template Selector Header */}
+              <div className="p-4 border-b border-border/20">
+                <div className="flex items-center gap-2 mb-3">
                   <Settings className="w-5 h-5 text-accent" />
-                  <span className="font-semibold">ตั้งค่า Default Footer Blocks</span>
+                  <span className="font-semibold">เลือก Template</span>
                 </div>
-                {isSettingsOpen ? (
-                  <ChevronUp className="w-5 h-5 text-muted" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-muted" />
-                )}
-              </button>
-
-              <div className={`accordion-content ${isSettingsOpen ? "open" : ""}`}>
-                <div className="p-4 pt-0 space-y-4">
-                  <div>
-                    <label className="label" htmlFor="contactBlockId">
-                      Contact Block ID
-                    </label>
-                    <input
-                      id="contactBlockId"
-                      type="text"
-                      className="input-field"
-                      value={contactBlockId}
-                      onChange={(e) => setContactBlockId(e.target.value)}
-                      placeholder="เช่น 12669"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label" htmlFor="doctorBlockId">
-                      Doctor Block ID
-                    </label>
-                    <input
-                      id="doctorBlockId"
-                      type="text"
-                      className="input-field"
-                      value={doctorBlockId}
-                      onChange={(e) => setDoctorBlockId(e.target.value)}
-                      placeholder="เช่น 12482"
-                    />
-                  </div>
-
-                  <p className="text-sm text-muted">
-                    Block IDs เหล่านี้จะถูกเพิ่มท้ายบทความโดยอัตโนมัติ
-                  </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { value: 'rwc', label: '🏥 RWC', desc: 'Accordion TOC' },
+                    { value: 'standard', label: '🌿 Standard', desc: 'LuckyWP TOC' },
+                    { value: 'universal', label: '🌐 Universal', desc: 'ไม่มี TOC/Footer' },
+                  ] as { value: TemplateType; label: string; desc: string }[]).map((t) => (
+                    <button
+                      key={t.value}
+                      onClick={() => setTemplateType(t.value)}
+                      className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl border text-sm transition-all ${templateType === t.value
+                          ? 'border-primary bg-primary/10 text-primary font-semibold'
+                          : 'border-border/30 text-muted hover:border-primary/40'
+                        }`}
+                    >
+                      <span>{t.label}</span>
+                      <span className="text-xs opacity-70">{t.desc}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
+
+              {/* Settings Accordion — แสดงเฉพาะ rwc และ standard */}
+              {templateType !== 'universal' && (
+                <>
+                  <button
+                    className="accordion-header w-full p-4 flex items-center justify-between"
+                    onClick={toggleSettings}
+                  >
+                    <span className="text-sm font-medium text-muted">ตั้งค่า Block IDs</span>
+                    {isSettingsOpen ? (
+                      <ChevronUp className="w-4 h-4 text-muted" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-muted" />
+                    )}
+                  </button>
+
+                  <div className={`accordion-content ${isSettingsOpen ? 'open' : ''}`}>
+                    <div className="p-4 pt-0 space-y-4">
+                      {templateType === 'rwc' && (
+                        <>
+                          <div>
+                            <label className="label" htmlFor="contactBlockId">Contact Block ID</label>
+                            <input
+                              id="contactBlockId"
+                              type="text"
+                              className="input-field"
+                              value={contactBlockId}
+                              onChange={(e) => setContactBlockId(e.target.value)}
+                              placeholder="เช่น 12669"
+                            />
+                          </div>
+                          <div>
+                            <label className="label" htmlFor="doctorBlockId">Doctor Block ID</label>
+                            <input
+                              id="doctorBlockId"
+                              type="text"
+                              className="input-field"
+                              value={doctorBlockId}
+                              onChange={(e) => setDoctorBlockId(e.target.value)}
+                              placeholder="เช่น 12482"
+                            />
+                          </div>
+                        </>
+                      )}
+                      {templateType === 'standard' && (
+                        <div>
+                          <label className="label" htmlFor="standardBlockId">Standard Block ID</label>
+                          <input
+                            id="standardBlockId"
+                            type="text"
+                            className="input-field"
+                            value={standardBlockId}
+                            onChange={(e) => setStandardBlockId(e.target.value)}
+                            placeholder="เช่น 8549"
+                          />
+                        </div>
+                      )}
+                      <p className="text-xs text-muted">
+                        Block IDs จะถูกเพิ่มท้ายบทความโดยอัตโนมัติ
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {templateType === 'universal' && (
+                <p className="px-4 pb-4 text-xs text-muted">
+                  🌐 Universal — output เป็น Flatsome shortcode มาตรฐาน ไม่มี TOC และไม่มี footer block
+                </p>
+              )}
             </section>
           </div>
 
